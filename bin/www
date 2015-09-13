@@ -3,6 +3,23 @@ var app = require('../app');
 
 app.set('port', process.env.PORT || 3000);
 
-var server = app.listen(app.get('port'), function() {
-  console.log('Express server listening on port ' + server.address().port);
+var expressServer = app.listen(app.get('port'), function() {
+  console.log('Express server listening on port ' + expressServer.address().port);
 });
+
+
+// BINARY SERVER
+var http = require('http');
+var server = http.createServer(app).listen(9000);
+
+var BinaryServer = require('binaryjs').BinaryServer;
+var fs = require('fs');
+
+var binaryserver = new BinaryServer({server:server, path:'/binary-endpoint'});
+
+binaryserver.on('connection',function(client){
+  filename = __dirname+'/../public/videos/aqui.mp4'
+  var file = fs.createReadStream(filename);
+  console.log('streaming file');
+  client.send(file);
+})
